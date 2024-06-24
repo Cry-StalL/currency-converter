@@ -1,6 +1,7 @@
-use currency_converter::get_exchange_rate;
+use currency_converter::App;
 
 fn main() {
-    let price: f64 = get_exchange_rate("USD", "CNY").unwrap();
-    println!("{}", price);
+    yew::Renderer::<App>::new().render();
+    // let price: f64 = get_exchange_rate("USD", "CNY").unwrap();
+    // println!("{}", price);
 }
