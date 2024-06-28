@@ -6,7 +6,7 @@ use serde_json::Value;
 
 pub async fn get_exchange_rate(currency_from: &str, currency_to: &str) -> Result<f64, Box<dyn StdError>>{
     let client = Client::builder()
-        .timeout(Duration::from_secs(10))  // 设置超时值
+        // .timeout(Duration::from_secs(10))  // 设置超时值
         .build()?;
 
     let url = format!("https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_0iH3VzeURHPkxOfBl7t0xSsMzfg9kywq8ESfwSLJ&currencies={currency_to}&base_currency={currency_from}");

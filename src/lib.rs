@@ -11,7 +11,8 @@ pub fn App() -> Html { // function components can't be async
 
     html! {
         <div>
-            <p>{exchange_rate}</p>
+            // <p>{exchange_rate}</p>
+            <p>{"test"}</p>
         </div>
     }
 }
