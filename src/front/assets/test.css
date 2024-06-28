@@ -1,0 +1,135 @@
+body{
+    padding: 0px;
+    border-width: 0px;
+    background-color: rgb(9, 219, 234);
+
+}
+.login-group{
+    background-color: aqua;
+    width: 6cm;
+    border-radius: 8px;
+    border: 2px solid #0e61c6 ;
+    /* display: inline; */
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px;
+}
+.float-input-group{
+    background-color: aqua;
+    position: relative;
+    padding: 10px;
+        
+}
+.float-input-group input{
+    padding-bottom: 8px;
+    padding-top: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: aqua;
+    border-radius: 8px;
+    outline: none;
+    color: #000000;
+    font-size: 16px;
+    border: 2px solid #ffffff;
+    width: 4cm;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    top: 50%;
+
+}
+.float-input-group input#password{
+    /* padding: 10px; */
+    border-radius: 8px;
+    outline: none;
+
+    font-size: 16px;
+}
+.float-placeholder{
+    position: absolute;
+    top: 0%;
+    left: 50%;
+    font-size: 16px;
+    padding: 0px 5px;
+    transform: translateX(-80px);
+    transition: 0.3s;
+    pointer-events: none;
+}
+.float-input-group input:focus + .float-placeholder,
+.float-input-group input:not(:placeholder-shown) + .float-placeholder
+{
+    top: -100%;
+    background-color: aqua;
+}
+
+
+.navigator{
+    margin: 0px;
+    background-color: #ffffff;
+    /* display: inline-block; */
+}
+.navitem{
+    display: inline-block;
+    position: relative;
+}
+.navitem a{
+    background-color: #ffffff;
+    padding: 9px 10px;
+    margin: 10px;
+    display: block;
+    color: #000000;
+    text-decoration: none;
+}
+.navitem a:hover{
+    transform: translateY(-8px);
+    transition: 0.3s;
+}
+.navitem_home_1{
+    display: inline-block;
+    /* margin-right: 0cm;
+    padding-right: 0px; */
+
+}
+.navitem_home_1 a{
+    background-color: #ffffff;
+    padding: 20px 10px;
+    padding-right: 0;
+    margin-right: 0;
+    display: inline-block;
+    color: #000000;
+    text-decoration: none;
+    
+}
+.dropdownbutton{
+    border: 0px;
+    background-color: #ffffff;
+    transition: 0.3s;
+}
+.dropdownbutton:hover{
+    transform: rotate(180deg);
+}
+.dropdown{
+    padding: 5px 5px;
+    padding-left: 5px;
+    margin-left: 0px;
+    display: inline-block;
+    position: absolute;
+    text-align: center;
+    transform: translateX(-70px) translateY(+65px);
+    background-color: #ffffff;
+    border-radius: 5px;
+    transition: 0.3s;
+    visibility: hidden;
+    
+}
+.dropdowncolumn{
+    display: inline-block;
+}
+.dropdowncolumn .dropdownitem{
+    padding: 3px;
+}
+
+.dropdownbutton:hover+.dropdown,.dropdown:hover{
+    visibility: visible;
+}
