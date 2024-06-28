@@ -1,8 +1,6 @@
 
-use wasm_bindgen_futures::spawn_local;
 use reqwest::Client;
-use yew::prelude::*;
-use std::error::Error as StdError;
+use std::{error::Error as StdError, time::Duration};
 use serde_json::Value;
 
 
