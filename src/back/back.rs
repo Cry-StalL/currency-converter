@@ -1,26 +1,26 @@
-// use std::f64;
-// use std::time::Duration;
-// use reqwest;
-// use reqwest::Client;
-// use std::error::Error as StdError;
-// use serde_json;
-// use tokio;
-// use serde_json::Value;
-//
-// #[tokio::main]
-// pub async fn get_exchange_rate(currency_from: &str, currency_to: &str) -> Result<f64, Box<dyn StdError>>{
-//     let client = Client::builder()
-//         .timeout(Duration::from_secs(10))  // 设置超时值
-//         .build()?;
-//
-//     let url = format!("https://finance.pae.baidu.com/vapi/v1/getquotation?group=huilv_minute&need_reverse_real=1&code={currency_from}{currency_to}&finClientType=pc");
-//     let response = client.get(url).send().await?;
-//
-//     let content = response.text().await?;
-//     let content_json: Value = serde_json::from_str(&content).unwrap();
-//     let exchange_rate = content_json["Result"]["cur"]["price"].as_str().unwrap().parse::<f64>()?;
-//     return Ok(exchange_rate);
-// }
+
+use wasm_bindgen_futures::spawn_local;
+use reqwest::Client;
+use yew::prelude::*;
+use std::error::Error as StdError;
+use serde_json::Value;
+
+
+pub async fn get_exchange_rate(currency_from: &str, currency_to: &str) -> Result<f64, Box<dyn StdError>>{
+    let client = Client::builder()
+        .timeout(Duration::from_secs(10))  // 设置超时值
+        .build()?;
+
+    let url = format!("https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_0iH3VzeURHPkxOfBl7t0xSsMzfg9kywq8ESfwSLJ&currencies={currency_to}&base_currency={currency_from}");
+    let response = client.get(url).send().await?;
+
+    let content = response.text().await?;
+    let content_json: Value = serde_json::from_str(&content).unwrap();
+
+    web_sys::console::log_1(&content.into());
+    let exchange_rate = content_json["data"][currency_to].as_f64().unwrap();
+    return Ok(exchange_rate);
+}
 //
 // pub fn cul(currency_from: f64 , rate:f64) -> f64{
 //     let currency_to= currency_from * rate;
