@@ -1,8 +1,39 @@
 
 use reqwest::Client;
-use std::{error::Error as StdError, time::Duration};
+use std::{error::Error as StdError, fmt::{self, Error}, time::Duration};
 use serde_json::Value;
 
+#[derive(Debug)]
+enum MyError {
+    From_Type_Error(String),
+    To_Type_Error(String),
+    Type_Error(String),
+    FA_Error(String),
+}
+
+impl fmt::Display for MyError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+           
+            MyError::From_Type_Error(ref err) => write!(f, "From_Type_Error : {}", err),
+            MyError::To_Type_Error(ref err) => write!(f, "To_Type_Error : {}", err),
+            MyError::FA_Error(ref err) => write!(f, "Amount_Error : {}", err),
+            MyError::Type_Error(ref err) => write!(f, "Types Error: {}", err),
+        }
+    }
+}
+
+
+impl StdError for MyError {
+    fn source(&self) -> Option<&(dyn StdError + 'static)> {
+        match *self {
+            MyError::From_Type_Error(_) => None,
+            MyError::To_Type_Error(_) => None,
+            MyError::FA_Error(_) => None,
+            MyError::Type_Error(_) => None,
+        }
+    }
+}
 
 pub async fn get_exchange_rate(currency_from: &str, currency_to: &str) -> Result<f64, Box<dyn StdError>>{
     let client = Client::builder()
@@ -14,16 +45,49 @@ pub async fn get_exchange_rate(currency_from: &str, currency_to: &str) -> Result
 
     let content = response.text().await?;
     let content_json: Value = serde_json::from_str(&content).unwrap();
+    match &content_json["errors"] {
+        Value::Null => {
+            web_sys::console::log_1(&"successfully get rate".into());
+            let exchange_rate = content_json["data"][currency_to].as_f64().unwrap();
 
-    web_sys::console::log_1(&content.into());
-    let exchange_rate = content_json["data"][currency_to].as_f64().unwrap();
-    return Ok(exchange_rate);
+            return Ok(exchange_rate);
+        },
+        Value::Bool(_) => todo!(),
+        Value::Number(_) => todo!(),
+        Value::String(_) => todo!(),
+        Value::Array(_) => todo!(),
+        Value::Object(Errormap) => {
+            web_sys::console::log_1(&"Error".into());
+            web_sys::console::log_1(&content.into());
+            
+            // match map["base_currency"]{
+            //     Value::Null => {
+            //         web_sys::console::log_1(&"To type Error".into());
+            //         return Err(Box::new(MyError::Type_Error("Invaild To Currency Type".to_string())));
+            //     },
+            //     Value::Bool(_) => todo!(),
+            //     Value::Number(_) => todo!(),
+            //     Value::String(_) => todo!(),
+            //     Value::Array(_) => {
+            //         web_sys::console::log_1(&"From type Error".into());
+            //         return Err(Box::new(MyError::Type_Error("Invaild From Currency Type".to_string())));
+            //     },
+            //     Value::Object(_) => todo!(),
+            // }
+            return Err(Box::new(MyError::Type_Error("Invaild currency type".to_string())));
+        }
+            
+    }
+    // web_sys::console::log_1(&content.into());
+    // let exchange_rate = content_json["data"][currency_to].as_f64().unwrap_or(0.0);
+
+    // return Ok(exchange_rate);
 }
 //
-// pub fn cul(currency_from: f64 , rate:f64) -> f64{
-//     let currency_to= currency_from * rate;
-//     currency_to
-// }
+pub fn cal(currency_from: f64 , rate:f64) -> f64{
+    let currency_to= currency_from * rate;
+    currency_to
+}
 //
 // pub fn handle_error(err: Box<dyn StdError>) {
 //     if let Some(reqwest_err) = err.downcast_ref::<reqwest::Error>() {
@@ -44,7 +108,7 @@ pub async fn get_exchange_rate(currency_from: &str, currency_to: &str) -> Result
 //         eprintln!("Failed to connect.{}",e);
 //     } else if e.is_decode() {
 //         eprintln!("Failed to decode the response body.{}",e);
-//     } else if e.is_status() {//应该不会发生
+//     } else if e.is_status() {
 //         if let Some(status) = e.status() {
 //             eprintln!("HTTP error with status code: {}", status);
 //         } else {
