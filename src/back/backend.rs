@@ -1,37 +1,37 @@
 
 use reqwest::Client;
-use std::{error::Error as StdError, fmt::{self, Error}, time::Duration};
+use std::{error::Error as StdError, fmt::{self}};
 use serde_json::Value;
 
 #[derive(Debug)]
-enum MyError {
-    Type_Error(String),
+pub enum MyError {
+    NetworkError(String),
+    TypeError(String),
 }
-
 impl fmt::Display for MyError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            MyError::Type_Error(ref err) => write!(f, "Types Error: {}", err),
+        match self {
+            MyError::TypeError(msg) => write!(f, "Type error: {}", msg),
+            MyError::NetworkError(msg) => write!(f, "Network error: {}", msg),
         }
     }
 }
 
 
-impl StdError for MyError {
-    fn source(&self) -> Option<&(dyn StdError + 'static)> {
-        match *self {
-            MyError::Type_Error(_) => None,
-        }
-    }
-}
+impl StdError for MyError {}
+
 
 pub async fn get_exchange_rate(currency_from: &str, currency_to: &str) -> Result<f64, Box<dyn StdError>>{
     let client = Client::builder()
-        // .timeout(Duration::from_secs(10))  // 设置超时值
         .build()?;
 
     let url = format!("https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_0iH3VzeURHPkxOfBl7t0xSsMzfg9kywq8ESfwSLJ&currencies={currency_to}&base_currency={currency_from}");
-    let response = client.get(url).send().await?;
+    let response = match client.get(url).send().await{
+        Ok(r) => r,
+        Err(e) => {
+            return Err(Box::new(MyError::NetworkError("Get response failed :".to_string()+e.to_string().as_str())));
+        },
+    };
 
     let content = response.text().await?;
     let content_json: Value = serde_json::from_str(&content).unwrap();
@@ -42,20 +42,28 @@ pub async fn get_exchange_rate(currency_from: &str, currency_to: &str) -> Result
 
             return Ok(exchange_rate);
         },
-        Value::Bool(_) => todo!(),
-        Value::Number(_) => todo!(),
-        Value::String(_) => todo!(),
-        Value::Array(_) => todo!(),
-        Value::Object(Errormap) => {            
-            return Err(Box::new(MyError::Type_Error("Invaild currency type".to_string())));
+        _ => {            
+            return Err(Box::new(MyError::TypeError("Invalid currency type".to_string())));
         }       
     }
 }
-//
+
 pub fn cal(currency_from: f64 , rate:f64) -> f64{
     let currency_to= currency_from * rate;
     currency_to
 }
+
+
+
+
+
+
+
+
+
+
+
+
 //
 // pub fn handle_error(err: Box<dyn StdError>) {
 //     if let Some(reqwest_err) = err.downcast_ref::<reqwest::Error>() {
