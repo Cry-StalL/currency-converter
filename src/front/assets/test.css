@@ -52,13 +52,22 @@ body{
 
     font-size: 16px;
 }
-.float-input-group input#TO_Amount{
+
+.float-input-group input#To_Amount{
     /* padding: 10px; */
     border-radius: 8px;
     outline: none;
     pointer-events: none;
     font-size: 16px;
 }
+
+.float-input-group input#From_Amount{
+    /* padding: 10px; */
+    border-radius: 8px;
+    outline: none;
+    font-size: 16px;
+}
+
 .float-placeholder{
     position: absolute;
     top: 0%;
@@ -130,14 +139,14 @@ body{
     transition: all 0.5s;
     cursor: pointer;
     margin: 5px;
-  }
+}
   
 .ConvertBUT span {
     cursor: pointer;
     display: inline-block;
     position: relative;
     transition: 0.5s;
-  }
+}
   
 .ConvertBUT span:after {
     content: '»';
@@ -146,18 +155,40 @@ body{
     top: 0;
     right: -20px;
     transition: 0.5s;
-  }
+}
   
 .ConvertBUT:hover span {
     padding-right: 25px;
-  }
+}
   
 .ConvertBUT:hover span:after {
     opacity: 1;
     right: 0;
-  }
+}
+
 .ConvertBUT:active {
     background-color: #3e8e41;
     box-shadow: 0 5px #666;
     transform: translateY(4px);
-  }
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal content box */
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    position: relative;
+}

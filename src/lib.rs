@@ -1,5 +1,6 @@
 mod back;
 
+use gloo_net::websocket::Message;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 
@@ -18,6 +19,7 @@ pub struct MyComponent {
     input_value_from_amount: f64,
     input_value_to: String,
     convert_result:f64,
+    prompt : bool,
 }
 
 pub enum Msg {
@@ -26,10 +28,12 @@ pub enum Msg {
     UpdateInputF(String),
     UpdateInputFA(f64),
     UpdateInputT(String),
+    Promptclose
 }
 
 
 impl Component for MyComponent {
+
     type Message = Msg;
     type Properties = ();
 
@@ -43,6 +47,7 @@ impl Component for MyComponent {
             input_value_from_amount: 0.0,
             input_value_to: String::new(),
             convert_result: 0.0,
+            prompt : false,
         }
     }
 
@@ -60,6 +65,7 @@ impl Component for MyComponent {
                         // 处理错误的情况，例如打印错误信息或其他处理
                         web_sys::console::log_1(&"Async function error: ".into());
                         web_sys::console::log_1(&_err.to_string().into());
+                        self.prompt = true;
                     }
                 }
                 true // 返回 true 表示需要重新渲染组件
@@ -89,6 +95,10 @@ impl Component for MyComponent {
                 self.input_value_to = value;
                 true
             },
+            Msg::Promptclose => {
+                self.prompt = false;
+                true
+            },
         }
     }
 
@@ -107,69 +117,147 @@ impl Component for MyComponent {
             Msg::UpdateInputT(input.value())
         });
 
-        html! {
-            <body class="layout">
-
-                <div>
-                    <h1 class = "HEAD">
-                        {"本网页为您提供方便快捷地货币换算服务"}
-                    </h1>
-                </div>
-                
-
-                <div class="container">
-                    <div class="login-group">
-                        <br/>
-                        <div class="float-input-group">
-                            <input oninput={oninput} value={self.input_value_from.clone()} id = ""  type="text"  placeholder=" "/>
-                            <label class="float-placeholder">
-                                {"From"}
-                            </label>
-                        </div>
-                        <br/>
-                        <br/>
-                        <div class="float-input-group">
-                            <input oninput={oninput2}  id = "" type="text" placeholder=" "/>
-                            <label class="float-placeholder">
-                                {"Amount"}
-                            </label>
-                        </div>
-                        <br/>
+        if self.prompt{
+            html! {
+                <body class="layout">
+    
+                    <div>
+                        <h1 class = "HEAD">
+                            {"本网页为您提供方便快捷地货币换算服务"}
+                        </h1>
                     </div>
-                    <div class="arrow-right"></div>
-                    <div class="login-group">
-                        <br/>
-                        <div class="float-input-group">
-                            <input oninput={oninput3} value={self.input_value_to.clone()} id = ""  type="text"  placeholder=" "/>
-                            <label class="float-placeholder">
-                                {"TO"}
-                            </label>
+                    
+                    <div class="modal-overlay" >
+                        <div class="modal-content" >
+                            { "请输入正确的货币缩写"}
+                            <button onclick={ctx.link().callback(|_| Msg::Promptclose)}>{ "x" }</button>
                         </div>
-                        <br/>
-                        <br/>
-                        <div class="float-input-group">
-                            <input value={self.convert_result.to_string()} id = "TO_Amount" type="text" placeholder=" "/>
-                            <label class="float-placeholder">
-                                {"Amount"}
-                            </label>
-                        </div>
-                        <br/>
                     </div>
-                </div>
 
-                <div class="container">
-                    <button class="ConvertBUT" onclick={ctx.link().callback(|_| Msg::CallAsyncFunction)} >
-                        <span>{"转换"}</span>
-                    </button>
-                </div>
-                
-                <div>
-                    <h1 class = "BUTTOM">
-                        {"—————————————————————————————————————————————————————————————————————————————————————————"}
-                    </h1>
-                </div>
-
-            </body>
+                    <div class="container">
+                        <div class="login-group">
+                            <br/>
+                            <div class="float-input-group">
+                                <input oninput={oninput} value={self.input_value_from.clone()} id = ""  type="text"  placeholder=" "/>
+                                <label class="float-placeholder">
+                                    {"From"}
+                                </label>
+                            </div>
+                            <br/>
+                            <br/>
+                            <div class="float-input-group">
+                                <input oninput={oninput2} type = "number" id = "From_Amount" placeholder=" "/>
+                                <label class="float-placeholder">
+                                    {"Amount"}
+                                </label>
+                            </div>
+                            <br/>
+                        </div>
+                        <div class="arrow-right"></div>
+                        <div class="login-group">
+                            <br/>
+                            <div class="float-input-group">
+                                <input oninput={oninput3} value={self.input_value_to.clone()} id = ""  type="text"  placeholder=" "/>
+                                <label class="float-placeholder">
+                                    {"To"}
+                                </label>
+                            </div>
+                            <br/>
+                            <br/>
+                            <div class="float-input-group">
+                                <input value={self.convert_result.to_string()} id = "To_Amount" type="text" placeholder=" "/>
+                                <label class="float-placeholder">
+                                    {"Amount"}
+                                </label>
+                            </div>
+                            <br/>
+                        </div>
+                    </div>
+    
+                    <div class="container">
+                        <button class="ConvertBUT" onclick={ctx.link().callback(|_| Msg::CallAsyncFunction)} >
+                            <span>{"转换"}</span>
+                        </button>
+                    </div>
+                    
+                    <div>
+                        <h1 class = "BUTTOM">
+                            {"—————————————————————————————————————————————————————————————————————————————————————————"}
+                        </h1>
+                    </div>
+    
+                </body>
+            }
+        } 
+        else {
+            html! {
+                <body class="layout">
+    
+                    <div>
+                        <h1 class = "HEAD">
+                            {"本网页为您提供方便快捷地货币换算服务"}
+                        </h1>
+                    </div>
+                    
+    
+                    <div class="container">
+                        <div class="login-group">
+                            <br/>
+                            <div class="float-input-group">
+                                <input oninput={oninput} value={self.input_value_from.clone()} id = ""  type="text"  placeholder=" "/>
+                                <label class="float-placeholder">
+                                    {"From"}
+                                </label>
+                            </div>
+                            <br/>
+                            <br/>
+                            <div class="float-input-group">
+                                <input oninput={oninput2} type = "number" id = "From_Amount" placeholder=" "/>
+                                <label class="float-placeholder">
+                                    {"Amount"}
+                                </label>
+                            </div>
+                            <br/>
+                        </div>
+                        <div class="arrow-right"></div>
+                        <div class="login-group">
+                            <br/>
+                            <div class="float-input-group">
+                                <input oninput={oninput3} value={self.input_value_to.clone()} id = ""  type="text"  placeholder=" "/>
+                                <label class="float-placeholder">
+                                    {"To"}
+                                </label>
+                            </div>
+                            <br/>
+                            <br/>
+                            <div class="float-input-group">
+                                <input value={self.convert_result.to_string()} id = "To_Amount" type="text" placeholder=" "/>
+                                <label class="float-placeholder">
+                                    {"Amount"}
+                                </label>
+                            </div>
+                            <br/>
+                        </div>
+                    </div>
+    
+                    <div class="container">
+                        <button class="ConvertBUT" onclick={ctx.link().callback(|_| Msg::CallAsyncFunction)} >
+                            <span>{"转换"}</span>
+                        </button>
+                    </div>
+                    
+                    <div>
+                        <h1 class = "BUTTOM">
+                            {"—————————————————————————————————————————————————————————————————————————————————————————"}
+                        </h1>
+                    </div>
+    
+                </body>
+            }
         }
+        
+
     }
 }
+
+

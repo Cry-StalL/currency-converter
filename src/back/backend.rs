@@ -5,19 +5,12 @@ use serde_json::Value;
 
 #[derive(Debug)]
 enum MyError {
-    From_Type_Error(String),
-    To_Type_Error(String),
     Type_Error(String),
-    FA_Error(String),
 }
 
 impl fmt::Display for MyError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-           
-            MyError::From_Type_Error(ref err) => write!(f, "From_Type_Error : {}", err),
-            MyError::To_Type_Error(ref err) => write!(f, "To_Type_Error : {}", err),
-            MyError::FA_Error(ref err) => write!(f, "Amount_Error : {}", err),
             MyError::Type_Error(ref err) => write!(f, "Types Error: {}", err),
         }
     }
@@ -27,9 +20,6 @@ impl fmt::Display for MyError {
 impl StdError for MyError {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match *self {
-            MyError::From_Type_Error(_) => None,
-            MyError::To_Type_Error(_) => None,
-            MyError::FA_Error(_) => None,
             MyError::Type_Error(_) => None,
         }
     }
@@ -56,32 +46,10 @@ pub async fn get_exchange_rate(currency_from: &str, currency_to: &str) -> Result
         Value::Number(_) => todo!(),
         Value::String(_) => todo!(),
         Value::Array(_) => todo!(),
-        Value::Object(Errormap) => {
-            web_sys::console::log_1(&"Error".into());
-            web_sys::console::log_1(&content.into());
-            
-            // match map["base_currency"]{
-            //     Value::Null => {
-            //         web_sys::console::log_1(&"To type Error".into());
-            //         return Err(Box::new(MyError::Type_Error("Invaild To Currency Type".to_string())));
-            //     },
-            //     Value::Bool(_) => todo!(),
-            //     Value::Number(_) => todo!(),
-            //     Value::String(_) => todo!(),
-            //     Value::Array(_) => {
-            //         web_sys::console::log_1(&"From type Error".into());
-            //         return Err(Box::new(MyError::Type_Error("Invaild From Currency Type".to_string())));
-            //     },
-            //     Value::Object(_) => todo!(),
-            // }
+        Value::Object(Errormap) => {            
             return Err(Box::new(MyError::Type_Error("Invaild currency type".to_string())));
-        }
-            
+        }       
     }
-    // web_sys::console::log_1(&content.into());
-    // let exchange_rate = content_json["data"][currency_to].as_f64().unwrap_or(0.0);
-
-    // return Ok(exchange_rate);
 }
 //
 pub fn cal(currency_from: f64 , rate:f64) -> f64{
