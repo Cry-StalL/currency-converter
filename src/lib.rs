@@ -128,7 +128,7 @@ impl Component for MyComponent {
     
                     <div>
                         <h1 class = "HEAD">
-                            {"本网页为您提供方便快捷地货币换算服务"}
+                            {"本网页为您提供方便快捷的货币换算服务"}
                         </h1>
                     </div>
                     
@@ -200,7 +200,7 @@ impl Component for MyComponent {
     
                     <div>
                         <h1 class = "HEAD">
-                            {"本网页为您提供方便快捷地货币换算服务"}
+                            {"本网页为您提供方便快捷的货币换算服务"}
                         </h1>
                     </div>
                     
@@ -272,7 +272,7 @@ impl Component for MyComponent {
     
                     <div>
                         <h1 class = "HEAD">
-                            {"本网页为您提供方便快捷地货币换算服务"}
+                            {"本网页为您提供方便快捷的货币换算服务"}
                         </h1>
                     </div>
                     
