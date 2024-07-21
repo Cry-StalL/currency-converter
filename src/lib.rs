@@ -10,7 +10,6 @@ use std::error::Error as StdError;
 
 
 pub struct MyComponent {
-    callback: Callback<Result<f64, Box<dyn StdError>>>,
     input_value_from: String,
     input_value_from_amount: f64,
     input_value_to: String,
@@ -35,11 +34,9 @@ impl Component for MyComponent {
     type Properties = ();
 
     fn create(ctx: &Context<Self>) -> Self {
-        let callback = ctx.link().callback(Msg::AsyncResult);
 
         Self {
-            callback,
-
+            
             input_value_from: String::new(),
             input_value_from_amount: 0.0,
             input_value_to: String::new(),
@@ -60,18 +57,15 @@ impl Component for MyComponent {
                         self.convert_result = Result;
                     }
                     Err(err) => {
-                        // 处理错误的情况，例如打印错误信息或其他处理
-                        web_sys::console::log_1(&"Get rate error: ".into());
                         match err.downcast_ref::<MyError>(){
                             Some(MyError::TypeError(_)) => {
                                 self.prompt = true
-                                // 处理应用程序错误
                             }
                             Some(MyError::NetworkError(_)) => {
                                 self.neterr = true
                             }
                             None => {
-                                web_sys::console::log_1(&"An unknown error occurred:".into());
+                                web_sys::console::log_1(&"An unknown error occurred while getting rate:".into());
                                 web_sys::console::log_1(&err.to_string().into());
                                 // 处理其他类型的错误
                             }
@@ -81,7 +75,7 @@ impl Component for MyComponent {
                 true // 返回 true 表示需要重新渲染组件
             }
             Msg::CallAsyncFunction => {
-                let callback = self.callback.clone();
+                let callback = ctx.link().callback(Msg::AsyncResult);
                 let from =  self.input_value_from.clone();
                 let to = self.input_value_to.clone();
                 spawn_local(async move {
